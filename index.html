@@ -316,6 +316,9 @@ button.tab.today-btn:not([aria-selected="true"]){border-color:var(--ball);backgr
 .appicon.logoimg{width:46px;height:46px;margin:0;border-radius:12px}
 .test-banner{background:#facc15;color:#111;font:700 15px/1.3 system-ui,sans-serif;text-align:center;padding:8px 12px;position:relative;z-index:99999}
 @media print{.appicon,.test-banner{display:none!important}}</style>
+<link rel="stylesheet" href="eps-design.css">
+<style>:root{--sport:#0891b2}</style>
+<script src="eps-commun.js" defer></script>
 </head>
 <body>
 
@@ -1130,7 +1133,7 @@ function renderSession(s){
     <h3 class="sec">Ce qui a été travaillé</h3>${list(s.done)}
     <div class="note"><b>Lien avec S4 et l’évaluation.</b> ${s.check}</div></div>`;
   }
-  const tl=s.tl?`<div class="timeline">${s.tl.map(x=>`<span>${x[0]} <b>${x[1]} min</b></span>`).join('')}</div>`:'';
+  const tl=s.tl?`<div class="timeline">${s.tl.map(x=>`<span style="flex:${x[1]}">${x[0]} <b>${x[1]} min</b></span>`).join('')}</div>`:'';
   const ev=`<div class="evalbox"><h4>Ce que la séance prépare pour l’évaluation (S9)</h4><ul>${s.eval.map(x=>`<li><b>${EVAL_SHORT[x[0]]}.</b> ${x[1]}</li>`).join('')}</ul></div>`;
   const tbtn=/^[pst][3-8]b?$/.test(s.id)?`<button type="button" class="tb pri tzgo" onclick="tGoFromSession('${CYCLES[state.c].label} ${s.n}')">▶ Tournoi de la séance : capitaines, minuteur, scores</button>`:'';
   return `<div class="panel">${statusChip(s.status)}<h2>${s.n} · ${s.title}</h2><p class="lead">${s.lead}</p>${tl}${tbtn}${ev}
