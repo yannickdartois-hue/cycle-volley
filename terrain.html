@@ -22,7 +22,18 @@
   --vert:#1D6B3A; --vert-pale:#E6F3EA; --alerte:#B42318; --alerte-pale:#FDE8E6;
   --facile:#2F6FB0; --facile-pale:#EAF2FB; --dur:#B4441C; --dur-pale:#FCEDE6;
   --d:"Archivo","Arial Narrow",Arial,sans-serif; --t:"Atkinson","Segoe UI",Roboto,Arial,sans-serif;
+  --sur-encre:#FFFFFF; --fait:#9AA3AE;
+  --c-p:#7A3DB8; --c-p-pale:#F1E8FB; --c-t:#1F4FA8; --c-t-pale:#E3EBF8; --sur-niv:#FFFFFF;
 }
+body.niv-p{--niv:var(--c-p);--niv-pale:var(--c-p-pale)}
+body.niv-t{--niv:var(--c-t);--niv-pale:var(--c-t-pale)}
+/* Mode sombre : pour préparer le soir. Au gymnase, le mode clair reste le plus lisible. */
+@media (prefers-color-scheme:dark){:root{
+  --sol:#11161D; --craie:#1B222C; --encre:#E9EEF3; --repere:#9AA5B3; --trait:#323C49; --sur-encre:#11161D; --fait:#5B6573;
+  --ligne:#F2B21B; --ligne-fonce:#F5C451; --ligne-pale:#3A2E10;
+  --vert:#6FD39F; --vert-pale:#15301F; --alerte:#FF8A80; --alerte-pale:#3A1A18;
+  --facile:#7FB0E8; --facile-pale:#162638; --dur:#F29470; --dur-pale:#3A2018;
+  --c-p:#C39BF0; --c-p-pale:#2C1F3F; --c-t:#8FB4F2; --c-t-pale:#1B2A44; --sur-niv:#11161D; color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--sol);color:var(--encre);font:18px/1.4 var(--t);-webkit-font-smoothing:antialiased;min-height:100vh;overscroll-behavior-y:none}
@@ -40,28 +51,33 @@ a{color:var(--encre)}
 .barre .app small{display:block;font-weight:400;color:var(--repere);font-size:14px}
 .barre .titre{flex:1;min-width:0;font:800 21px/1.1 var(--d);font-stretch:74%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
 .bt{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 16px;border-radius:12px;font:700 16px var(--t);white-space:nowrap}
-.bt.noir{background:var(--encre);color:#fff}
+.bt.noir{background:var(--encre);color:var(--sur-encre)}
 .bt.bord{border:2px solid var(--encre)}
 .bt.clair{background:var(--sol)}
 .bt.jaune{background:var(--ligne-pale);color:var(--ligne-fonce)}
 .trace{height:10px;background:var(--ligne)}
+/* Le niveau : un bandeau à sa couleur, sous le tracé du volley, et une pastille dans la barre */
+.niveau{display:flex;align-items:center;gap:10px;padding:6px 18px;background:var(--niv);color:var(--sur-niv);font:800 19px/1 var(--d);font-stretch:80%;letter-spacing:.04em}
+.niveau button{margin-left:auto;font:700 14px var(--t);letter-spacing:0;padding:6px 12px;border-radius:9px;border:1.5px solid currentColor;color:inherit;min-height:34px}
+.pastille-niv{display:inline-grid;place-items:center;min-width:54px;height:40px;padding:0 10px;border-radius:10px;background:var(--niv);color:var(--sur-niv);font:800 22px/1 var(--d);font-stretch:72%;flex:none}
+.carte .etiq .nv{display:inline-block;margin-right:8px;padding:1px 7px;border-radius:6px;background:var(--niv-pale);color:var(--niv);font:700 13px var(--t)}
 
 /* ---- déroulé peint ---- */
 .deroule{position:relative;padding:34px 18px 0}
 .ligneT{display:flex;gap:4px;height:16px}
 .ligneT button{border-radius:3px;background:var(--trait);min-width:6px}
-.ligneT .fait{background:#9AA3AE}
+.ligneT .fait{background:var(--fait)}
 .ligneT .zap{background:repeating-linear-gradient(135deg,var(--trait) 0 6px,transparent 6px 11px)}
 .ligneT .now{background:var(--ligne)}
 .ligneT .vu{outline:3px solid var(--encre);outline-offset:2px}
-.curseur{position:absolute;top:4px;transform:translateX(calc(var(--k,50) * -1%));font:800 16px var(--d);font-stretch:80%;background:var(--encre);color:#fff;padding:3px 9px;border-radius:7px;white-space:nowrap;pointer-events:none}
+.curseur{position:absolute;top:4px;transform:translateX(calc(var(--k,50) * -1%));font:800 16px var(--d);font-stretch:80%;background:var(--encre);color:var(--sur-encre);padding:3px 9px;border-radius:7px;white-space:nowrap;pointer-events:none}
 .curseur::after{content:"";position:absolute;left:calc(var(--k,50) * 1%);top:100%;margin-left:-1.5px;width:3px;height:22px;background:var(--encre)}
 .blocs{display:flex;gap:4px;margin-top:8px}
 .blocs button{min-width:0;text-align:left;font-size:14px;color:var(--repere);line-height:1.2;padding:2px 0}
 .blocs b{display:block;font:800 16px var(--d);font-stretch:80%;color:var(--encre);white-space:nowrap}
 .blocs .now b{color:var(--ligne-fonce)}
 .blocs .zap{text-decoration:line-through}
-.blocs span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blocs span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;hyphens:auto;padding-right:4px}
 .modif{display:inline-block;margin-left:4px;font:700 12px var(--t);vertical-align:2px;padding:1px 6px;border-radius:5px;background:var(--ligne-pale);color:var(--ligne-fonce)}
 .modif.moins{background:var(--sol);color:var(--repere)}
 
@@ -92,7 +108,18 @@ ol.der li{counter-increment:e;display:grid;grid-template-columns:30px 1fr;gap:10
 ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;width:30px;height:30px;border-radius:50%;background:var(--sol);display:grid;place-items:center}
 .texte{font-size:18px;line-height:1.4;margin:0}
 .texte p{margin:0 0 8px}
-.roles{margin-top:12px;background:var(--encre);color:#fff;border-radius:16px;padding:14px 18px}
+.fiche{margin:4px 0 0;font-size:15px;color:var(--repere)}
+.org{margin:0;padding-left:20px;font-size:18px;line-height:1.38}
+.org li+li{margin-top:5px}
+.org b,.roles b{font-weight:700}
+.org b{color:var(--encre)}
+.etapes{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.etapes li{display:grid;grid-template-columns:62px 1fr;gap:12px;align-items:center;background:var(--sol);border-radius:14px;padding:10px 14px;font-size:18px;line-height:1.3}
+.etapes li b{font:800 24px/1 var(--d);font-stretch:72%;text-align:right;white-space:nowrap}
+.etapes li b.vide{color:var(--repere)}
+.aujourdhui{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--ligne-pale);font-size:17px;line-height:1.38}
+.aujourdhui b{color:var(--ligne-fonce)}
+.roles{margin-top:12px;background:var(--encre);color:var(--sur-encre);border-radius:16px;padding:14px 18px}
 .roles small{display:block;font:700 14px var(--t);opacity:.75;margin-bottom:4px}
 .roles p{margin:0;font-size:20px;line-height:1.35}
 .reussite{margin:14px 0 0;padding:10px 14px;background:var(--vert-pale);border-radius:12px;font-size:17px}
@@ -101,7 +128,7 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 @media (max-width:560px){.vars{grid-template-columns:1fr}}
 .v{border-radius:14px;padding:10px 12px;border:2px solid;font-size:16.5px;line-height:1.3}
 .v b{display:flex;align-items:center;gap:8px;font:800 20px/1 var(--d);font-stretch:76%;margin-bottom:6px}
-.v b i{font-style:normal;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;font:800 20px/1 var(--d)}
+.v b i{font-style:normal;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--sur-encre);font:800 20px/1 var(--d)}
 .v.m{border-color:var(--facile);background:var(--facile-pale)}.v.m i{background:var(--facile)}
 .v.p{border-color:var(--dur);background:var(--dur-pale)}.v.p i{background:var(--dur)}
 .lance{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
@@ -116,36 +143,48 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 .cap{font-size:15px;color:var(--repere);margin:8px 0 0}
 .ensuite{border:2px dashed var(--trait);border-radius:18px;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .ensuite div{flex:1;min-width:0}
-.ensuite .bt{border:2px solid var(--trait);background:#fff;min-height:42px}
+.ensuite .bt{border:2px solid var(--trait);background:var(--craie);min-height:42px}
 .ensuite small{display:block;font:700 14px var(--t);color:var(--repere)}
 .ensuite b{font:800 23px/1.05 var(--d);font-stretch:74%}
 .fin-txt{font-size:18px}
-.note{width:100%;min-height:96px;border:2px solid var(--trait);border-radius:12px;padding:10px 12px;font:17px/1.4 var(--t);color:var(--encre);background:#fff;resize:vertical}
+.note{width:100%;min-height:96px;border:2px solid var(--trait);border-radius:12px;padding:10px 12px;font:17px/1.4 var(--t);color:var(--encre);background:var(--craie);resize:vertical}
 .case{display:flex;align-items:center;gap:10px;font-size:17px;margin:10px 0}
 .case input{width:26px;height:26px;accent-color:var(--encre)}
 
-/* ---- schéma : le vrai terrain, à l'échelle ---- */
-.schema{background:#fff;border-radius:14px;border:1.5px solid var(--trait);padding:10px 14px}
+/* ---- schéma : le vrai terrain, à l'échelle, posé sur le sol du gymnase ----
+   Couleurs fixes : le schéma reste une « feuille » claire, même en mode sombre. */
+.schema{background:#EEF1F0;border-radius:14px;padding:8px;color:#172033}
 .schema svg{display:block;width:100%;height:auto;overflow:visible}
-.c-floor{fill:#fff}
-.c-line{stroke:var(--ligne);stroke-width:4;fill:none}
-.c-att{stroke:var(--ligne);stroke-width:2.5;fill:none}
-.c-net{stroke:var(--encre);stroke-width:6}
-.c-zone{fill:var(--ligne);fill-opacity:.22;stroke:var(--ligne-fonce);stroke-width:1.5;stroke-dasharray:6 4}
-.c-zonet{fill:var(--ligne-fonce);font:700 13px var(--t)}
-.c-target{fill:var(--ligne);fill-opacity:.3;stroke:var(--ligne-fonce);stroke-width:1.5}
+.c-gym{fill:#EEF1F0}
+.c-gymline{stroke:#C9D0D3;stroke-width:2;fill:none}
+.c-floor{fill:#FFFFFF}
+.c-line{stroke:#F2A900;stroke-width:5;fill:none}
+.c-att{stroke:#F2A900;stroke-width:3;fill:none}
+.c-net{stroke:#172033;stroke-width:6}
+.c-zone{fill:#F2A900;fill-opacity:.22;stroke:#8A5A00;stroke-width:1.5;stroke-dasharray:6 4}
+.c-zonet{fill:#8A5A00;font:700 13px var(--t)}
+.c-target{fill:#F2A900;fill-opacity:.3;stroke:#8A5A00;stroke-width:1.5}
 .c-cone{fill:#E8590C}
-.c-pa{fill:var(--facile)}.c-pb{fill:var(--dur)}.c-pn{fill:#5A6475}
+.c-pa{fill:#2F6FB0}.c-pb{fill:#C2410C}.c-pn{fill:#5A6475}
 .c-pt{fill:#fff;font:800 16px var(--d);text-anchor:middle;dominant-baseline:central}
-.c-ball{stroke:var(--encre);stroke-width:2.5;stroke-dasharray:8 5;fill:none}
-.c-run{stroke:var(--encre);stroke-width:3;fill:none}
-.c-head-b,.c-head-r{fill:var(--encre)}
-.c-label{fill:var(--encre);font:700 13px var(--t)}
-.c-say{fill:var(--encre);font:italic 700 13px var(--t)}
-.c-shadow{fill:var(--encre);fill-opacity:.07}
+.c-ball{stroke:#172033;stroke-width:2.5;stroke-dasharray:8 5;fill:none}
+.c-run{stroke:#172033;stroke-width:3;fill:none}
+.c-head-b,.c-head-r{fill:#172033}
+.c-label{fill:#172033;font:700 13px var(--t);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.c-say{fill:#172033;font:italic 700 13px var(--t);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.c-shadow{fill:#172033;fill-opacity:.07}
+.c-ordre circle{fill:#F2A900;stroke:#fff;stroke-width:2}
+.c-ordre text{fill:#172033;font:800 15px var(--d);text-anchor:middle;dominant-baseline:central}
+.legende{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 4px 0;font-size:14px;color:var(--repere)}
+.legende span{display:inline-flex;align-items:center;gap:6px}
+.legende i{display:inline-block;flex:none}
+.legende .rond{width:14px;height:14px;border-radius:50%}
+.legende .pt{width:24px;border-top:2.5px dashed currentColor}
+.legende .tr{width:24px;border-top:3px solid currentColor}
+.legende .num{width:18px;height:18px;border-radius:50%;background:#F2A900;color:#172033;font:800 12px/18px var(--d);text-align:center;font-style:normal}
 
 /* ---- barre du bas, à portée de pouce ---- */
-.pouce{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:10px;padding:10px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:rgba(236,239,238,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--trait)}
+.pouce{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:10px;padding:10px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--sol) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--trait)}
 .pouce .info{flex:1;min-width:0;font-size:15px;color:var(--repere);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pouce .info b{color:var(--encre)}
 .pouce .info b.retard{color:var(--alerte)}
@@ -160,7 +199,7 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 .alerte{padding:12px 14px;border-radius:14px;background:var(--alerte-pale);margin-bottom:12px}
 .alerte p{margin:0 0 8px;font-size:17px}
 .alerte p b{color:var(--alerte)}
-.alerte .bt{border:2px solid var(--alerte);color:var(--alerte);background:#fff;min-height:42px;font-size:15px;margin:0 6px 6px 0}
+.alerte .bt{border:2px solid var(--alerte);color:var(--alerte);background:var(--craie);min-height:42px;font-size:15px;margin:0 6px 6px 0}
 .alerte.ok{background:var(--vert-pale)}.alerte.ok p{margin:0}.alerte.ok b{color:var(--vert)}
 .ligneA{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;background:var(--craie);border-radius:16px;padding:10px 12px;margin-bottom:8px;border-left:8px solid var(--trait)}
 .ligneA.now{border-left-color:var(--ligne)}
@@ -175,7 +214,7 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 .pas span em{display:block;font:700 12px var(--t);font-style:normal;color:var(--ligne-fonce)}
 .act{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
 .act .bt{min-height:40px;font-size:14px;padding:0 12px;background:var(--sol)}
-.act .bt.on{background:var(--encre);color:#fff}
+.act .bt.on{background:var(--encre);color:var(--sur-encre)}
 .ajout{display:flex;gap:8px;margin:6px 0 4px}
 .ajout .bt{flex:1;border:2px dashed var(--repere);min-height:50px}
 .aide{color:var(--repere);font-size:14px;margin:10px 0 0}
@@ -184,7 +223,10 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 .reglages{margin-top:18px;background:var(--craie);border-radius:14px;padding:4px 14px}
 .cy{display:flex;gap:8px;margin-bottom:12px}
 .cy button{padding:9px 16px;border-radius:10px;font:700 16px var(--t);background:var(--craie)}
-.cy button.on{background:var(--encre);color:#fff}
+.cy button.on{background:var(--encre);color:var(--sur-encre)}
+.cy button[data-cy=p].on{background:var(--c-p);color:var(--sur-niv)}.cy button[data-cy=t].on{background:var(--c-t);color:var(--sur-niv)}
+.pc.niv-p .sc.jour{outline-color:var(--c-p)}.pc.niv-t .sc.jour{outline-color:var(--c-t)}
+.pc .sc{border-left:6px solid var(--nivp,var(--trait))}.pc.niv-p{--nivp:var(--c-p)}.pc.niv-t{--nivp:var(--c-t)}
 .grilleS{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 @media (max-width:560px){.grilleS{grid-template-columns:1fr}}
 .sc{background:var(--craie);border-radius:16px;padding:10px 14px;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:start}
@@ -204,7 +246,7 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 .choix button b{display:block;font:800 19px/1.1 var(--d);font-stretch:76%}
 .choix button span{font-size:14px;color:var(--repere)}
 .choix h3{margin:12px 0 2px;font:700 15px var(--t);color:var(--repere)}
-.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--encre);color:#fff;padding:10px 16px;border-radius:12px;font-size:16px;z-index:40;max-width:calc(100% - 32px)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--encre);color:var(--sur-encre);padding:10px 16px;border-radius:12px;font-size:16px;z-index:40;max-width:calc(100% - 32px)}
 @media (prefers-reduced-motion:no-preference){.panneau.droite{animation:dr .18s ease-out}.panneau.gauche{animation:ga .18s ease-out}@keyframes dr{from{transform:translateX(40px);opacity:.6}}@keyframes ga{from{transform:translateX(-40px);opacity:.6}}}
 @media (max-width:560px){.pouce .info{display:none}.barre .titre{display:none}}
 @media print{.pouce,.barre .bt{display:none}}
@@ -213,11 +255,13 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 <body>
 <header class="barre">
   <img src="icon-192.png" alt="">
-  <div class="app">Volley-ball<small id="cyLab">Terminale</small></div>
+  <div class="app">Volley-ball<small>Lycée Pompidou</small></div>
+  <span class="pastille-niv" id="cyPast">Tle</span>
   <div class="titre" id="titre"></div>
   <a class="bt clair" id="prep" href="index.html">Préparer</a>
 </header>
 <div class="trace"></div>
+<div class="niveau" id="niveau"></div>
 <section class="deroule" id="deroule" aria-label="Déroulé de la séance"></section>
 <main class="zone" id="zone"></main>
 <footer class="pouce">
@@ -277,17 +321,73 @@ function finPrevue(){const h=horaires().filter(Boolean);return h.length?h[h.leng
 function retardMin(){if(!J.started)return 0;const f=finPrevue();return Math.round((f-(J.started+J.cible*60000))/60000)}
 
 /* ================== Schéma ================== */
-function schemaDe(e){if(!e||!e.sch||!SCH[e.sch])return '';const sp=SCH[e.sch];return `<div class="schema">${court(sp)}</div>${sp.cap?`<p class="cap">${esc(sp.cap)}</p>`:''}`}
+function courtT(sp){
+  let svg=court(sp);
+  const W=(14+2*MX)*S,H=(7+2*MY)*S;
+  // le sol du gymnase et les lignes des autres sports, très pâles
+  const gym=`<rect class="c-gym" x="0" y="0" width="${W}" height="${H}"/><rect class="c-gymline" x="${X(-0.9)}" y="${Y(-0.5)}" width="${15.8*S}" height="${8*S}"/><circle class="c-gymline" cx="${X(7)}" cy="${Y(3.5)}" r="${1.8*S}"/><path class="c-gymline" d="M${X(-0.9)},${Y(0.3)} A${3.4*S},${3.4*S} 0 0 1 ${X(-0.9)},${Y(6.7)}"/><path class="c-gymline" d="M${X(14.9)},${Y(0.3)} A${3.4*S},${3.4*S} 0 0 0 ${X(14.9)},${Y(6.7)}"/>`;
+  svg=svg.replace('</defs>','</defs>'+gym);
+  // l'ordre des trajets du ballon, numéroté
+  const bl=sp.balls||[];
+  if(bl.length>=2&&bl.length<=4){
+    const n=bl.map((r,k)=>{const a=[X(r[0][0]),Y(r[0][1])],b=[X(r[1][0]),Y(r[1][1])],p=arrowPath(r[0],r[1],r[2]===undefined?0.6:r[2]),c=p.from;
+      const mx=(a[0]+2*c[0]+b[0])/4,my=(a[1]+2*c[1]+b[1])/4;return `<g class="c-ordre"><circle cx="${mx}" cy="${my}" r="12"/><text x="${mx}" y="${my}">${k+1}</text></g>`}).join('');
+    svg=svg.replace('</svg>',n+'</svg>');
+  }
+  return svg;
+}
+function legende(sp){
+  const t=new Set((sp.players||[]).map(p=>p.team||'a')),out=[];
+  if(t.has('a'))out.push('<span><i class="rond" style="background:#2F6FB0"></i>équipe qui travaille</span>');
+  if(t.has('b'))out.push('<span><i class="rond" style="background:#C2410C"></i>serveur, lanceur, adversaire</span>');
+  if(t.has('n'))out.push('<span><i class="rond" style="background:#5A6475"></i>observateur, arbitre</span>');
+  if((sp.balls||[]).length)out.push('<span><i class="pt"></i>ballon</span>');
+  if((sp.runs||[]).length)out.push('<span><i class="tr"></i>déplacement</span>');
+  if((sp.balls||[]).length>=2&&(sp.balls||[]).length<=4)out.push('<span><i class="num">1</i>ordre des actions</span>');
+  return out.length?`<div class="legende">${out.join('')}</div>`:'';
+}
+function schemaDe(e){if(!e||!e.sch||!SCH[e.sch])return '';const sp=SCH[e.sch];return `<div class="schema">${courtT(sp)}</div>${legende(sp)}${sp.cap?`<p class="cap">${esc(sp.cap)}</p>`:''}`}
+
+/* ================== Textes : échauffement, organisation ================== */
+// Repères chiffrés en gras : on les trouve d'un coup d'œil.
+function grasChiffres(t){return esc(t).replace(/(\d+(?:,\d+)?(?:\s?[×x]\s?\d+(?:,\d+)?)?(?:\s?(?:m|min|s|fois|ballons?|équipes?|terrains?|services?|séries?|joueurs?|réceptionneurs?|passeurs?|tours?|points?))?)(?![\w’])/g,'<b>$1</b>')}
+function phrases(t){return String(t||'').split(/(?<=[.;])\s+(?=[A-ZÀ-Ý0-9«(])/).map(x=>x.replace(/[;]$/,'').trim()).filter(Boolean)}
+function orgHTML(t){const p=phrases(t);return p.length>1?`<ul class="org">${p.map(x=>`<li>${grasChiffres(x)}</li>`).join('')}</ul>`:`<p class="texte">${grasChiffres(t)}</p>`}
+const ROUTINE=(WARMUPS[0]&&WARMUPS[0].deroul)||[];
+const EQUIPE=[['3','Général'],['2','Spécifique, avec ballon'],['2','Cheville, épaule et gainage'],['5','Travail ciblé sur l’axe choisi']];
+function etapesEchauff(s,b){
+  const brut=String(s.warm||'').replace(/<a [^>]*>.*?<\/a>/g,'').trim();
+  const lien=(String(s.warm||'').match(/<a [^>]*data-go="(\w+)"[^>]*>(.*?)<\/a>/)||[]);
+  const fiche=lien[1]?`<p class="texte" style="margin-top:12px"><a href="index.html#${J.c}-${lien[1]}">${lien[2]}</a></p>`:'';
+  let etapes=[],note='';
+  if(/présente la fiche/.test(brut)){
+    etapes=[['2','Présenter la fiche à la classe']].concat(EQUIPE);
+    const m=brut.match(/spécifique 2 \(([^)]+)\)/);if(m)etapes[2]=['2','Spécifique : '+m[1]];
+    note=brut.replace(/^.*?travail ciblé 5\.?\s*/,'');
+  } else if(/^Échauffement d’équipe/.test(brut)){
+    etapes=EQUIPE.slice();note=brut.replace(/^Échauffement d’équipe[^.;]*[.;]\s*/,'');
+  } else if(/^Routine type/.test(brut)){
+    etapes=ROUTINE.map(x=>{const m=x.match(/^(\d+)\s*min\s*:\s*(.*)$/);const t=m?m[2].split('. ')[0].replace(/\.$/,''):x;return [m?m[1]:'',t.charAt(0).toUpperCase()+t.slice(1)]});
+    const suite=brut.replace(/^Routine type,?\s*(puis\s*)?/,'').replace(/\.$/,'');if(suite)etapes.push(['',suite.charAt(0).toUpperCase()+suite.slice(1)]);
+  } else {
+    etapes=brut.replace(/\.$/,'').split(/,\s*puis\s*/).map(x=>['',x.charAt(0).toUpperCase()+x.slice(1)]);
+  }
+  const ol=`<ol class="etapes">${etapes.map(x=>`<li><b class="${x[0]?'':'vide'}">${x[0]?x[0]+'′':'·'}</b><span>${esc(x[1])}</span></li>`).join('')}</ol>`;
+  return ol+(note?`<div class="aujourdhui"><b>Aujourd’hui :</b> ${esc(note)}</div>`:'')+fiche;
+}
 
 /* ================== Rendu ================== */
 const $=id=>document.getElementById(id);
 function exDuBloc(b){return b&&b.k==='ex'?exDe(b.ref):null}
-function titreBloc(b){const e=exDuBloc(b);return e?e.t:b.label}
+function titreBloc(b){return b.label}
+const norm=t=>String(t||'').toLowerCase().replace(/^fil rouge \d+\s*·\s*/,'').replace(/[^a-z0-9àâäéèêëïîôöùûüç]+/g,' ').trim();
 function texteChaud(html){return String(html||'').replace(/<a [^>]*data-go="(\w+)"[^>]*>(.*?)<\/a>/g,(m,go,t)=>`<a href="index.html#${J.c}-${go}">${t}</a>`)}
 
 function rendre(){
   const s=sea(J.c,J.id);
-  $('cyLab').textContent=CYC[J.c].label;
+  document.body.classList.toggle('niv-p',J.c==='p');document.body.classList.toggle('niv-t',J.c==='t');
+  $('cyPast').textContent=J.c==='p'?'1re':'Tle';
+  $('niveau').innerHTML=`<span>${J.c==='p'?'PREMIÈRE':'TERMINALE'}</span><span style="opacity:.8;font:700 15px var(--t);letter-spacing:0">${s?esc(s.n)+' / '+esc(CYC[J.c].L[CYC[J.c].L.length-1].n):''}</span><button type="button" data-act="niv">Changer de niveau</button>`;
   $('titre').textContent=s?s.n+' · '+s.title:'';
   $('prep').href='index.html#'+J.c+'-'+J.id;
   rendreDeroule();rendreZone();rendreInfo();
@@ -334,12 +434,12 @@ function rendreZone(){
   else if(enCours){etiq='En cours';quand=`Jusqu’à ${hm(h.e)} ${tagMod}`}
   else {etiq=J.started?'À lancer maintenant':'Pour commencer';quand=`${b.dur} min ${tagMod}`}
   let corps='';
-  if(b.k==='warm'){corps=`<div class="texte" style="margin-top:14px"><p>${texteChaud(s.warm)}</p></div>`}
+  if(b.k==='warm'){corps=etapesEchauff(s,b)}
   else if(b.k==='bilan'){corps=`<h2 class="rub">Bilan avec les élèves</h2><div class="texte"><p>${esc(s.bilan||'Ce qui a progressé, ce qui reste à travailler, ce qui vient la prochaine fois.')}</p></div>`}
   else if(e){
     const avant=!enCours;
-    const roles=e.four?`<div class="roles"><small>Rôle de chacun</small><p>${esc(e.four)}</p></div>`:'';
-    const org=`<h2 class="rub">Organisation</h2><p class="texte">${esc(e.disp)}</p>`;
+    const roles=e.four?`<div class="roles"><small>Rôle de chacun</small><p>${grasChiffres(e.four)}</p></div>`:'';
+    const org=`<h2 class="rub">Organisation</h2>${orgHTML(e.disp)}`;
     const der=`<h2 class="rub">Déroulement</h2><ol class="der">${(e.deroul||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`;
     const reus=e.reus?`<p class="reussite"><b>Réussi si</b> ${esc(e.reus)}</p>`:'';
     corps=avant?(org+roles+reus+variables(e)):(der+reus+variables(e)+`<details class="revoir"><summary>Revoir l’organisation</summary>${org.replace('<h2 class="rub">Organisation</h2>','')}${roles}</details>`);
@@ -348,7 +448,7 @@ function rendreZone(){
   if(apercu){ctrl=`<div class="lance"><button class="bt noir" type="button" data-act="retour">Revenir au bloc en cours</button>${b.st==='todo'?`<button class="bt clair" type="button" data-act="zap" data-i="${i}">Zapper ce bloc</button>`:''}</div>`}
   else if(enCours){ctrl=`<div class="reglage"><div class="chrono" id="chrono"><span class="num">–</span><small>restantes</small></div><button class="bt jaune" type="button" data-act="plus" data-v="2">+ 2 min</button><button class="bt jaune" type="button" data-act="plus" data-v="5">+ 5 min</button><button class="bt clair" type="button" data-act="pause" id="btPause">Pause</button><button class="bt noir suiv" type="button" data-act="suivant">${suivantDe(i)<0?'Terminer la séance':'Bloc suivant'}</button></div>`}
   else {ctrl=`<div class="lance"><button class="bt noir go" type="button" data-act="go">${J.started?'C’est parti':'Démarrer la séance'}</button><button class="bt clair" type="button" data-act="zap" data-i="${i}">Zapper</button></div>`}
-  const carte=`<article class="carte${apercu?' apercu':enCours?'':' attente'}"><p class="etiq">${etiq}</p><h1>${esc(titreBloc(b))}</h1><p class="quand">${quand}</p>${enCours?ctrl:''}${corps}${enCours?'':ctrl}</article>`;
+  const carte=`<article class="carte${apercu?' apercu':enCours?'':' attente'}"><p class="etiq"><span class="nv">${J.c==='p'?'1re':'Tle'}</span>${etiq}</p><h1>${esc(titreBloc(b))}</h1>${e&&norm(e.t)!==norm(b.label)?`<p class="fiche">Fiche : ${esc(e.t)}</p>`:''}<p class="quand">${quand}</p>${enCours?ctrl:''}${corps}${enCours?'':ctrl}</article>`;
   // colonne de droite : schéma, consignes, ensuite
   let cote='';
   if(e){cote+=`<div class="boite"><h2>${esc(e.k||'Schéma')}</h2>${schemaDe(e)||'<p class="cap">Pas de schéma pour cette situation.</p>'}</div>`;
@@ -417,6 +517,7 @@ document.addEventListener('click',ev=>{
   else if(act==='retour'){J.vu=null;rendreDeroule();rendreZone()}
   else if(act==='voir'){J.vu=i;rendreDeroule();rendreZone();window.scrollTo({top:0,behavior:'smooth'})}
   else if(act==='zap')zapper(i);
+  else if(act==='niv'){cyVu=J.c==='p'?'t':'p';ouvrirSeances()}
 });
 /* balayage : passer d'un bloc à l'autre, en aperçu */
 let x0=null,y0=null;
@@ -525,8 +626,9 @@ function ouvrirSeances(){
     const mini=s.tl?`<div class="mini">${s.tl.map(x=>`<i style="flex:${x[1]}"></i>`).join('')}</div>`:'';
     return `<button type="button" class="sc ${etat}${ouv?' ouverte':''}" data-s="${s.id}"><span class="n">${esc(s.n)}</span><h3>${esc(s.title)}</h3><span class="et">${et}${ouv?' · ouverte ici':''}</span>${mini}</button>`;
   }).join('');
-  panneau('gauche','Mes séances',`<div class="cy"><button type="button" data-cy="p" class="${cyVu==='p'?'on':''}">Première</button><button type="button" data-cy="t" class="${cyVu==='t'?'on':''}">Terminale</button></div><div class="grilleS">${cartes}</div>
+  panneau('gauche','Mes séances · '+CYC[cyVu].label,`<div class="cy"><button type="button" data-cy="p" class="${cyVu==='p'?'on':''}">Première</button><button type="button" data-cy="t" class="${cyVu==='t'?'on':''}">Terminale</button></div><div class="grilleS">${cartes}</div>
    <p class="aide">Touche une séance pour la faire maintenant. Banque d’exercices, tournoi, observation, évaluation et fiches PDF sont dans <a href="index.html#${cyVu}-${CUR[cyVu]||CYC[cyVu].L[0].id}">Préparer</a>.</p>`,'Fermer');
+  $('couche').querySelector('.pc').classList.add('niv-'+cyVu);
   $('couche').querySelectorAll('[data-cy]').forEach(x=>x.onclick=()=>{cyVu=x.dataset.cy;ouvrirSeances()});
   $('couche').querySelectorAll('[data-s]').forEach(x=>x.onclick=()=>{
     const s=sea(cyVu,x.dataset.s);
