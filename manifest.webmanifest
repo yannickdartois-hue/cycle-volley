@@ -1,7 +1,7 @@
 {
  "name": "Cycles Volley · Pompidou",
  "short_name": "Volley",
- "start_url": "./",
+ "start_url": "terrain.html",
  "scope": "./",
  "display": "standalone",
  "background_color": "#f2f4f7",

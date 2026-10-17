@@ -129,6 +129,8 @@ ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;w
 .v{border-radius:14px;padding:10px 12px;border:2px solid;font-size:16.5px;line-height:1.3}
 .v b{display:flex;align-items:center;gap:8px;font:800 20px/1 var(--d);font-stretch:76%;margin-bottom:6px}
 .v b i{font-style:normal;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--sur-encre);font:800 20px/1 var(--d)}
+.fixe{margin-top:10px;padding:10px 14px;border-radius:14px;border:2px dashed var(--repere);font-size:16.5px;line-height:1.35}
+.fixe b{display:block;font:800 19px/1.1 var(--d);font-stretch:76%;margin-bottom:4px}
 .v.m{border-color:var(--facile);background:var(--facile-pale)}.v.m i{background:var(--facile)}
 .v.p{border-color:var(--dur);background:var(--dur-pale)}.v.p i{background:var(--dur)}
 .lance{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
@@ -329,7 +331,7 @@ function courtT(sp){
   svg=svg.replace('</defs>','</defs>'+gym);
   // l'ordre des trajets du ballon, numéroté
   const bl=sp.balls||[];
-  if(bl.length>=2&&bl.length<=4){
+  if(sp.ordre!==false&&bl.length>=2&&bl.length<=4){
     const n=bl.map((r,k)=>{const a=[X(r[0][0]),Y(r[0][1])],b=[X(r[1][0]),Y(r[1][1])],p=arrowPath(r[0],r[1],r[2]===undefined?0.6:r[2]),c=p.from;
       const mx=(a[0]+2*c[0]+b[0])/4,my=(a[1]+2*c[1]+b[1])/4;return `<g class="c-ordre"><circle cx="${mx}" cy="${my}" r="12"/><text x="${mx}" y="${my}">${k+1}</text></g>`}).join('');
     svg=svg.replace('</svg>',n+'</svg>');
@@ -343,7 +345,7 @@ function legende(sp){
   if(t.has('n'))out.push('<span><i class="rond" style="background:#5A6475"></i>observateur, arbitre</span>');
   if((sp.balls||[]).length)out.push('<span><i class="pt"></i>ballon</span>');
   if((sp.runs||[]).length)out.push('<span><i class="tr"></i>déplacement</span>');
-  if((sp.balls||[]).length>=2&&(sp.balls||[]).length<=4)out.push('<span><i class="num">1</i>ordre des actions</span>');
+  if(sp.ordre!==false&&(sp.balls||[]).length>=2&&(sp.balls||[]).length<=4)out.push('<span><i class="num">1</i>ordre des actions</span>');
   return out.length?`<div class="legende">${out.join('')}</div>`:'';
 }
 function schemaDe(e){if(!e||!e.sch||!SCH[e.sch])return '';const sp=SCH[e.sch];return `<div class="schema">${courtT(sp)}</div>${legende(sp)}${sp.cap?`<p class="cap">${esc(sp.cap)}</p>`:''}`}
@@ -416,6 +418,7 @@ function rendreDeroule(){
   $('deroule').innerHTML=cur+`<div class="ligneT">${l}</div><div class="blocs">${t}</div>`;
 }
 function variables(e){
+  if(e&&e.fixe&&!(e.moins||e.plus))return `<div class="fixe"><b>Pas de variable.</b> ${esc(e.fixe)}</div>`;
   if(!e||!(e.moins||e.plus))return '';
   return `<div class="vars">${e.moins?`<div class="v m"><b><i>−</i>Plus facile</b>${esc(e.moins)}</div>`:''}${e.plus?`<div class="v p"><b><i>+</i>Plus difficile</b>${esc(e.plus)}</div>`:''}</div>`;
 }
