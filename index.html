@@ -75,7 +75,7 @@ a{color:var(--encre)}
 /* ---- déroulé peint ---- */
 .deroule{position:relative;padding:34px 18px 0}
 .ligneT{display:flex;gap:4px;height:16px}
-.ligneT button{border-radius:3px;background:var(--trait);min-width:6px}
+.ligneT button{border-radius:3px;background:var(--trait);min-width:54px}
 .ligneT .fait{background:var(--fait)}
 .ligneT .zap{background:repeating-linear-gradient(135deg,var(--trait) 0 6px,transparent 6px 11px)}
 .ligneT .now{background:var(--ligne)}
@@ -83,11 +83,11 @@ a{color:var(--encre)}
 .curseur{position:absolute;top:4px;transform:translateX(calc(var(--k,50) * -1%));font:800 16px var(--d);font-stretch:80%;background:var(--encre);color:var(--sur-encre);padding:3px 9px;border-radius:7px;white-space:nowrap;pointer-events:none}
 .curseur::after{content:"";position:absolute;left:calc(var(--k,50) * 1%);top:100%;margin-left:-1.5px;width:3px;height:22px;background:var(--encre)}
 .blocs{display:flex;gap:4px;margin-top:8px}
-.blocs button{min-width:0;text-align:left;font-size:14px;color:var(--repere);line-height:1.2;padding:2px 0}
+.blocs button{min-width:54px;text-align:left;font-size:14px;color:var(--repere);line-height:1.2;padding:2px 0}
 .blocs b{display:block;font:800 16px var(--d);font-stretch:80%;color:var(--encre);white-space:nowrap}
 .blocs .now b{color:var(--ligne-fonce)}
 .blocs .zap{text-decoration:line-through}
-.blocs span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:break-word;-webkit-hyphens:auto;hyphens:auto;padding-right:4px}
+.blocs span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:normal;word-break:normal;hyphens:manual;padding-right:4px}
 .modif{display:inline-block;margin-left:4px;font:700 12px var(--t);vertical-align:2px;padding:1px 6px;border-radius:5px;background:var(--ligne-pale);color:var(--ligne-fonce)}
 .modif.moins{background:var(--sol);color:var(--repere)}
 
