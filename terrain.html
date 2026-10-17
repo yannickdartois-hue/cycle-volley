@@ -54,15 +54,15 @@ a{color:var(--encre)}
 .ligneT .zap{background:repeating-linear-gradient(135deg,var(--trait) 0 6px,transparent 6px 11px)}
 .ligneT .now{background:var(--ligne)}
 .ligneT .vu{outline:3px solid var(--encre);outline-offset:2px}
-.curseur{position:absolute;top:4px;transform:translateX(-50%);font:700 14px var(--t);background:var(--encre);color:#fff;padding:3px 9px;border-radius:7px;white-space:nowrap;pointer-events:none}
-.curseur::after{content:"";position:absolute;left:50%;top:100%;margin-left:-1.5px;width:3px;height:22px;background:var(--encre)}
+.curseur{position:absolute;top:4px;transform:translateX(calc(var(--k,50) * -1%));font:800 16px var(--d);font-stretch:80%;background:var(--encre);color:#fff;padding:3px 9px;border-radius:7px;white-space:nowrap;pointer-events:none}
+.curseur::after{content:"";position:absolute;left:calc(var(--k,50) * 1%);top:100%;margin-left:-1.5px;width:3px;height:22px;background:var(--encre)}
 .blocs{display:flex;gap:4px;margin-top:8px}
 .blocs button{min-width:0;text-align:left;font-size:14px;color:var(--repere);line-height:1.2;padding:2px 0}
-.blocs b{display:block;font:700 14px var(--t);color:var(--encre);white-space:nowrap}
+.blocs b{display:block;font:800 16px var(--d);font-stretch:80%;color:var(--encre);white-space:nowrap}
 .blocs .now b{color:var(--ligne-fonce)}
 .blocs .zap{text-decoration:line-through}
 .blocs span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.modif{display:inline-block;margin-left:4px;font:700 12px var(--t);padding:1px 6px;border-radius:5px;background:var(--ligne-pale);color:var(--ligne-fonce)}
+.modif{display:inline-block;margin-left:4px;font:700 12px var(--t);vertical-align:2px;padding:1px 6px;border-radius:5px;background:var(--ligne-pale);color:var(--ligne-fonce)}
 .modif.moins{background:var(--sol);color:var(--repere)}
 
 /* ---- zone principale ---- */
@@ -311,7 +311,8 @@ function rendreDeroule(){
     let acc=0;for(let i=0;i<J.cur;i++)acc+=ws[i];
     const r=restant(),b=J.blocks[J.cur];let frac=0;if(b&&J.bt&&r!=null)frac=Math.min(1,Math.max(0,1-r/(b.dur*60)));
     const pos=(acc+frac*(ws[J.cur]||0))/W*100;
-    cur=`<div class="curseur" style="left:calc(18px + (100% - 36px) * ${pos/100})">${hm(Date.now())}</div>`;}
+    const k=pos<6?Math.max(4,pos*50/6):pos>94?100-Math.max(4,(100-pos)*50/6):50;
+    cur=`<div class="curseur" style="left:calc(18px + (100% - 36px) * ${pos/100});--k:${k.toFixed(1)}">${hm(Date.now())}</div>`;}
   $('deroule').innerHTML=cur+`<div class="ligneT">${l}</div><div class="blocs">${t}</div>`;
 }
 function variables(e){
