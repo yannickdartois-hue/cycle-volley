@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F2A900">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Volley terrain">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-32.png">
+<title>Volley-ball · terrain</title>
+<style>
+/* ===== Écran terrain du cycle de volley-ball (version test) =====
+   Le gymnase comme langage : sol clair, tracé jaune du volley, encre du tableau d'affichage.
+   Deux polices embarquées pour le hors ligne : Archivo (titres, chiffres) et Atkinson Hyperlegible (texte). */
+@font-face{font-family:"Archivo";src:url(polices/archivo.woff2) format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+@font-face{font-family:"Atkinson";src:url(polices/atkinson-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Atkinson";src:url(polices/atkinson-700.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{
+  --sol:#ECEFEE; --craie:#FFFFFF; --encre:#172033; --repere:#5A6475; --trait:#D5DBDD;
+  --ligne:#F2A900; --ligne-fonce:#8A5A00; --ligne-pale:#FCEFC8;
+  --vert:#1D6B3A; --vert-pale:#E6F3EA; --alerte:#B42318; --alerte-pale:#FDE8E6;
+  --facile:#2F6FB0; --facile-pale:#EAF2FB; --dur:#B4441C; --dur-pale:#FCEDE6;
+  --d:"Archivo","Arial Narrow",Arial,sans-serif; --t:"Atkinson","Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--sol);color:var(--encre);font:18px/1.4 var(--t);-webkit-font-smoothing:antialiased;min-height:100vh;overscroll-behavior-y:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--ligne);outline-offset:2px}
+a{color:var(--encre)}
+.disp{font-family:var(--d);font-weight:800;font-stretch:72%}
+.num{font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+
+/* ---- barre haute ---- */
+.barre{display:flex;align-items:center;gap:12px;padding:10px 18px;padding-top:max(10px,env(safe-area-inset-top));background:var(--craie)}
+.barre img{width:36px;height:36px;border-radius:9px;flex:none}
+.barre .app{font:700 16px/1.15 var(--t);flex:none}
+.barre .app small{display:block;font-weight:400;color:var(--repere);font-size:14px}
+.barre .titre{flex:1;min-width:0;font:800 21px/1.1 var(--d);font-stretch:74%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px}
+.bt{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 16px;border-radius:12px;font:700 16px var(--t);white-space:nowrap}
+.bt.noir{background:var(--encre);color:#fff}
+.bt.bord{border:2px solid var(--encre)}
+.bt.clair{background:var(--sol)}
+.bt.jaune{background:var(--ligne-pale);color:var(--ligne-fonce)}
+.trace{height:10px;background:var(--ligne)}
+
+/* ---- déroulé peint ---- */
+.deroule{position:relative;padding:34px 18px 0}
+.ligneT{display:flex;gap:4px;height:16px}
+.ligneT button{border-radius:3px;background:var(--trait);min-width:6px}
+.ligneT .fait{background:#9AA3AE}
+.ligneT .zap{background:repeating-linear-gradient(135deg,var(--trait) 0 6px,transparent 6px 11px)}
+.ligneT .now{background:var(--ligne)}
+.ligneT .vu{outline:3px solid var(--encre);outline-offset:2px}
+.curseur{position:absolute;top:4px;transform:translateX(-50%);font:700 14px var(--t);background:var(--encre);color:#fff;padding:3px 9px;border-radius:7px;white-space:nowrap;pointer-events:none}
+.curseur::after{content:"";position:absolute;left:50%;top:100%;margin-left:-1.5px;width:3px;height:22px;background:var(--encre)}
+.blocs{display:flex;gap:4px;margin-top:8px}
+.blocs button{min-width:0;text-align:left;font-size:14px;color:var(--repere);line-height:1.2;padding:2px 0}
+.blocs b{display:block;font:700 14px var(--t);color:var(--encre);white-space:nowrap}
+.blocs .now b{color:var(--ligne-fonce)}
+.blocs .zap{text-decoration:line-through}
+.blocs span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modif{display:inline-block;margin-left:4px;font:700 12px var(--t);padding:1px 6px;border-radius:5px;background:var(--ligne-pale);color:var(--ligne-fonce)}
+.modif.moins{background:var(--sol);color:var(--repere)}
+
+/* ---- zone principale ---- */
+.zone{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);gap:16px;padding:16px 18px 110px}
+@media (max-width:900px){.zone{grid-template-columns:minmax(0,1fr)}}
+.carte{background:var(--craie);border-radius:22px;padding:18px 22px 20px;border-left:12px solid var(--ligne);min-width:0}
+.carte.attente{border-left-color:var(--trait)}
+.carte.apercu{border-left-color:var(--repere)}
+.etiq{font:700 15px var(--t);color:var(--ligne-fonce);margin:0 0 2px}
+.carte.attente .etiq,.carte.apercu .etiq{color:var(--repere)}
+.carte h1{margin:0;font:800 clamp(30px,3.6vw,38px)/1 var(--d);font-stretch:72%;text-wrap:balance}
+.quand{margin:6px 0 0;color:var(--repere);font-size:16px}
+.tag{display:inline-block;margin-left:6px;vertical-align:1px;font:700 13px var(--t);padding:2px 8px;border-radius:6px;background:var(--ligne-pale);color:var(--ligne-fonce)}
+.tag.moins{background:var(--sol);color:var(--repere)}
+.reglage{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 12px}
+.reglage .bt{min-height:52px;font-size:17px;padding:0 13px}
+.chrono{display:flex;align-items:baseline;gap:6px;padding:0 14px;min-height:52px;border-radius:14px;border:2px solid var(--trait)}
+.chrono span{font:800 40px/50px var(--d);font-stretch:70%}
+.chrono small{font:700 13px var(--t);color:var(--repere)}
+.chrono.fini{border-color:var(--dur);color:var(--dur)}
+.chrono.fini small{color:var(--dur)}
+.chrono.pause span{opacity:.45}
+.reglage .suiv{margin-left:auto}
+h2.rub{margin:16px 0 8px;font:700 15px var(--t);color:var(--repere)}
+ol.der{margin:0;padding:0;list-style:none;counter-reset:e;display:grid;gap:8px}
+ol.der li{counter-increment:e;display:grid;grid-template-columns:30px 1fr;gap:10px;font-size:18px;line-height:1.32}
+ol.der li::before{content:counter(e);font:800 20px/1 var(--d);font-stretch:75%;width:30px;height:30px;border-radius:50%;background:var(--sol);display:grid;place-items:center}
+.texte{font-size:18px;line-height:1.4;margin:0}
+.texte p{margin:0 0 8px}
+.roles{margin-top:12px;background:var(--encre);color:#fff;border-radius:16px;padding:14px 18px}
+.roles small{display:block;font:700 14px var(--t);opacity:.75;margin-bottom:4px}
+.roles p{margin:0;font-size:20px;line-height:1.35}
+.reussite{margin:14px 0 0;padding:10px 14px;background:var(--vert-pale);border-radius:12px;font-size:17px}
+.reussite b{color:var(--vert)}
+.vars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:560px){.vars{grid-template-columns:1fr}}
+.v{border-radius:14px;padding:10px 12px;border:2px solid;font-size:16.5px;line-height:1.3}
+.v b{display:flex;align-items:center;gap:8px;font:800 20px/1 var(--d);font-stretch:76%;margin-bottom:6px}
+.v b i{font-style:normal;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;font:800 20px/1 var(--d)}
+.v.m{border-color:var(--facile);background:var(--facile-pale)}.v.m i{background:var(--facile)}
+.v.p{border-color:var(--dur);background:var(--dur-pale)}.v.p i{background:var(--dur)}
+.lance{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.lance .go{flex:1 1 220px;min-height:64px;font-size:21px}
+.revoir{margin-top:14px}
+.revoir summary{cursor:pointer;font:700 15px var(--t);color:var(--repere);min-height:36px;display:flex;align-items:center}
+.cote{display:flex;flex-direction:column;gap:14px;min-width:0}
+.boite{background:var(--craie);border-radius:22px;padding:16px 18px}
+.boite h2{margin:0 0 8px;font:700 15px var(--t);color:var(--repere)}
+.boite ul{margin:0;padding-left:20px;font-size:17px;line-height:1.35}
+.boite li+li{margin-top:6px}
+.cap{font-size:15px;color:var(--repere);margin:8px 0 0}
+.ensuite{border:2px dashed var(--trait);border-radius:18px;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ensuite div{flex:1;min-width:0}
+.ensuite .bt{border:2px solid var(--trait);background:#fff;min-height:42px}
+.ensuite small{display:block;font:700 14px var(--t);color:var(--repere)}
+.ensuite b{font:800 23px/1.05 var(--d);font-stretch:74%}
+.fin-txt{font-size:18px}
+.note{width:100%;min-height:96px;border:2px solid var(--trait);border-radius:12px;padding:10px 12px;font:17px/1.4 var(--t);color:var(--encre);background:#fff;resize:vertical}
+.case{display:flex;align-items:center;gap:10px;font-size:17px;margin:10px 0}
+.case input{width:26px;height:26px;accent-color:var(--encre)}
+
+/* ---- schéma : le vrai terrain, à l'échelle ---- */
+.schema{background:#fff;border-radius:14px;border:1.5px solid var(--trait);padding:10px 14px}
+.schema svg{display:block;width:100%;height:auto;overflow:visible}
+.c-floor{fill:#fff}
+.c-line{stroke:var(--ligne);stroke-width:4;fill:none}
+.c-att{stroke:var(--ligne);stroke-width:2.5;fill:none}
+.c-net{stroke:var(--encre);stroke-width:6}
+.c-zone{fill:var(--ligne);fill-opacity:.22;stroke:var(--ligne-fonce);stroke-width:1.5;stroke-dasharray:6 4}
+.c-zonet{fill:var(--ligne-fonce);font:700 13px var(--t)}
+.c-target{fill:var(--ligne);fill-opacity:.3;stroke:var(--ligne-fonce);stroke-width:1.5}
+.c-cone{fill:#E8590C}
+.c-pa{fill:var(--facile)}.c-pb{fill:var(--dur)}.c-pn{fill:#5A6475}
+.c-pt{fill:#fff;font:800 16px var(--d);text-anchor:middle;dominant-baseline:central}
+.c-ball{stroke:var(--encre);stroke-width:2.5;stroke-dasharray:8 5;fill:none}
+.c-run{stroke:var(--encre);stroke-width:3;fill:none}
+.c-head-b,.c-head-r{fill:var(--encre)}
+.c-label{fill:var(--encre);font:700 13px var(--t)}
+.c-say{fill:var(--encre);font:italic 700 13px var(--t)}
+.c-shadow{fill:var(--encre);fill-opacity:.07}
+
+/* ---- barre du bas, à portée de pouce ---- */
+.pouce{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:10px;padding:10px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:rgba(236,239,238,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--trait)}
+.pouce .info{flex:1;min-width:0;font-size:15px;color:var(--repere);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pouce .info b{color:var(--encre)}
+.pouce .info b.retard{color:var(--alerte)}
+
+/* ---- panneaux ---- */
+.voile{position:fixed;inset:0;background:rgba(23,32,51,.45);z-index:20}
+.panneau{position:fixed;top:0;bottom:0;width:min(700px,100%);background:var(--sol);z-index:21;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(23,32,51,.25)}
+.panneau.droite{right:0}.panneau.gauche{left:0}
+.ph{display:flex;align-items:center;gap:12px;padding:14px 20px;padding-top:max(14px,env(safe-area-inset-top));background:var(--craie)}
+.ph h2{margin:0;flex:1;font:800 30px/1 var(--d);font-stretch:72%}
+.pc{flex:1;overflow:auto;padding:14px 20px 30px;-webkit-overflow-scrolling:touch}
+.alerte{padding:12px 14px;border-radius:14px;background:var(--alerte-pale);margin-bottom:12px}
+.alerte p{margin:0 0 8px;font-size:17px}
+.alerte p b{color:var(--alerte)}
+.alerte .bt{border:2px solid var(--alerte);color:var(--alerte);background:#fff;min-height:42px;font-size:15px;margin:0 6px 6px 0}
+.alerte.ok{background:var(--vert-pale)}.alerte.ok p{margin:0}.alerte.ok b{color:var(--vert)}
+.ligneA{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;background:var(--craie);border-radius:16px;padding:10px 12px;margin-bottom:8px;border-left:8px solid var(--trait)}
+.ligneA.now{border-left-color:var(--ligne)}
+.ligneA.fait{opacity:.55}
+.ligneA.zap{background:transparent;border:2px dashed var(--trait);border-left-width:8px}
+.ligneA.zap .nom{text-decoration:line-through;color:var(--repere)}
+.nom{font:800 21px/1.05 var(--d);font-stretch:74%;min-width:0}
+.nom small{display:block;font:400 14px var(--t);color:var(--repere);margin-top:3px}
+.pas{display:flex;align-items:center;border-radius:12px;background:var(--sol)}
+.pas button{width:46px;height:46px;font:700 24px var(--t)}
+.pas span{min-width:56px;text-align:center;font:800 23px/1 var(--d);font-stretch:72%}
+.pas span em{display:block;font:700 12px var(--t);font-style:normal;color:var(--ligne-fonce)}
+.act{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.act .bt{min-height:40px;font-size:14px;padding:0 12px;background:var(--sol)}
+.act .bt.on{background:var(--encre);color:#fff}
+.ajout{display:flex;gap:8px;margin:6px 0 4px}
+.ajout .bt{flex:1;border:2px dashed var(--repere);min-height:50px}
+.aide{color:var(--repere);font-size:14px;margin:10px 0 0}
+.report{display:flex;align-items:center;gap:10px;background:var(--ligne-pale);border-radius:14px;padding:10px 12px;margin-bottom:10px;font-size:16px}
+.report div{flex:1}
+.reglages{margin-top:18px;background:var(--craie);border-radius:14px;padding:4px 14px}
+.cy{display:flex;gap:8px;margin-bottom:12px}
+.cy button{padding:9px 16px;border-radius:10px;font:700 16px var(--t);background:var(--craie)}
+.cy button.on{background:var(--encre);color:#fff}
+.grilleS{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:560px){.grilleS{grid-template-columns:1fr}}
+.sc{background:var(--craie);border-radius:16px;padding:10px 14px;text-align:left;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:start}
+.sc .n{grid-row:span 3;font:800 30px/.95 var(--d);font-stretch:66%;min-width:52px;white-space:nowrap}
+.sc h3{margin:0;font:800 19px/1.05 var(--d);font-stretch:76%}
+.sc .et{font-size:13px;color:var(--repere)}
+.sc .et b{color:var(--vert)}
+.sc .mini{display:flex;gap:2px;height:6px;margin-top:6px}
+.sc .mini i{background:var(--trait);border-radius:2px}
+.sc.fait .n{color:var(--repere)}
+.sc.jour{outline:4px solid var(--ligne);outline-offset:-4px}
+.sc.jour .et b{color:var(--ligne-fonce)}
+.sc.ouverte{background:var(--ligne-pale)}
+.sc.eval{border:2px dashed var(--repere);background:transparent}
+.choix{display:grid;gap:8px}
+.choix button{background:var(--craie);border-radius:14px;padding:10px 14px;text-align:left}
+.choix button b{display:block;font:800 19px/1.1 var(--d);font-stretch:76%}
+.choix button span{font-size:14px;color:var(--repere)}
+.choix h3{margin:12px 0 2px;font:700 15px var(--t);color:var(--repere)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--encre);color:#fff;padding:10px 16px;border-radius:12px;font-size:16px;z-index:40;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.panneau.droite{animation:dr .18s ease-out}.panneau.gauche{animation:ga .18s ease-out}@keyframes dr{from{transform:translateX(40px);opacity:.6}}@keyframes ga{from{transform:translateX(-40px);opacity:.6}}}
+@media (max-width:560px){.pouce .info{display:none}.barre .titre{display:none}}
+@media print{.pouce,.barre .bt{display:none}}
+</style>
+</head>
+<body>
+<header class="barre">
+  <img src="icon-192.png" alt="">
+  <div class="app">Volley-ball<small id="cyLab">Terminale</small></div>
+  <div class="titre" id="titre"></div>
+  <a class="bt clair" id="prep" href="index.html">Préparer</a>
+</header>
+<div class="trace"></div>
+<section class="deroule" id="deroule" aria-label="Déroulé de la séance"></section>
+<main class="zone" id="zone"></main>
+<footer class="pouce">
+  <button class="bt bord" id="btSeances" type="button">‹ Séances</button>
+  <button class="bt bord" id="btAjuster" type="button">Ajuster le déroulé</button>
+  <div class="info" id="info"></div>
+</footer>
+<div id="couche"></div>
+
+<script src="volley-donnees.js"></script>
+<script>
+'use strict';
+globalThis.COURT_PR=0.42; /* joueurs dessinés plus gros sur l'écran terrain */
+/* ================== Données ================== */
+const CYC={t:{label:'Terminale',L:SESSIONS},p:{label:'Première',L:P_SESSIONS}};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lire=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const ecrire=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const auj=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const sea=(c,id)=>(CYC[c]||CYC.t).L.find(s=>s.id===id);
+const exDe=r=>{const s=sea(r.c,r.id);return s&&s.ex?s.ex[r.i]:null};
+const CUR=Object.assign({t:'s4',p:''},lire('volley-cur',{}));
+
+function plan(c,id){
+  const s=sea(c,id);if(!s||!s.tl||!s.ex)return [];
+  const tl=s.tl,b=[];
+  b.push({k:'warm',label:tl[0][0],dur:+tl[0][1]});
+  s.ex.forEach((e,i)=>{const t=tl[i+1];if(t&&!/^Bilan/.test(t[0]))b.push({k:'ex',ref:{c,id,i},label:t[0],dur:+t[1]})});
+  const last=tl[tl.length-1];b.push({k:'bilan',label:last[0],dur:+last[1]});
+  b.forEach(x=>{x.orig=x.dur;x.st='todo'});
+  return b;
+}
+/* L'état du jour : valable pour cette séance, ce jour-là seulement. */
+let J=lire('vt-jour',null);
+function nouveau(c,id){J={date:auj(),c,id,blocks:plan(c,id),cur:0,vu:null,started:null,bt:null,pausedAt:null,pauseMs:0,fin:null,son:J?J.son!==false:true};
+  const att=J.blocks.reduce((a,b)=>a+b.dur,0);J.cible=att;sauver()}
+function sauver(){ecrire('vt-jour',J)}
+function seanceDuJour(){const c=CUR.t?'t':'p';return {c,id:CUR[c]||CYC[c].L[0].id}}
+if(!J||J.date!==auj()||!sea(J.c,J.id)){const d=seanceDuJour();nouveau(d.c,d.id)}
+if(J.son===undefined)J.son=true;
+
+/* ================== Temps ================== */
+const hm=ms=>{const d=new Date(ms);return d.getHours()+' h '+String(d.getMinutes()).padStart(2,'0')};
+const mmss=s=>{const a=Math.abs(Math.round(s));return Math.floor(a/60)+':'+String(a%60).padStart(2,'0')};
+function horaires(){
+  const now=Date.now(),out=[];let t=null;
+  J.blocks.forEach((b,i)=>{
+    if(b.st==='zap'){out.push(null);return}
+    if(b.st==='done'){out.push({s:b.s,e:b.e});t=b.e;return}
+    if(i===J.cur&&J.bt){const p=J.pauseMs+(J.pausedAt?now-J.pausedAt:0);const e=J.bt+b.dur*60000+p;out.push({s:J.bt,e});t=Math.max(e,now);return}
+    const s=Math.max(t||now,now);const e=s+b.dur*60000;out.push({s,e});t=e;
+  });
+  return out;
+}
+function restant(){const b=J.blocks[J.cur];if(!b||!J.bt)return null;const now=Date.now();const p=J.pauseMs+(J.pausedAt?now-J.pausedAt:0);return (J.bt+b.dur*60000+p-now)/1000}
+function finPrevue(){const h=horaires().filter(Boolean);return h.length?h[h.length-1].e:null}
+function retardMin(){if(!J.started)return 0;const f=finPrevue();return Math.round((f-(J.started+J.cible*60000))/60000)}
+
+/* ================== Schéma ================== */
+function schemaDe(e){if(!e||!e.sch||!SCH[e.sch])return '';const sp=SCH[e.sch];return `<div class="schema">${court(sp)}</div>${sp.cap?`<p class="cap">${esc(sp.cap)}</p>`:''}`}
+
+/* ================== Rendu ================== */
+const $=id=>document.getElementById(id);
+function exDuBloc(b){return b&&b.k==='ex'?exDe(b.ref):null}
+function titreBloc(b){const e=exDuBloc(b);return e?e.t:b.label}
+function texteChaud(html){return String(html||'').replace(/<a [^>]*data-go="(\w+)"[^>]*>(.*?)<\/a>/g,(m,go,t)=>`<a href="index.html#${J.c}-${go}">${t}</a>`)}
+
+function rendre(){
+  const s=sea(J.c,J.id);
+  $('cyLab').textContent=CYC[J.c].label;
+  $('titre').textContent=s?s.n+' · '+s.title:'';
+  $('prep').href='index.html#'+J.c+'-'+J.id;
+  rendreDeroule();rendreZone();rendreInfo();
+}
+function rendreDeroule(){
+  const h=horaires(),vu=J.vu!=null?J.vu:J.cur;
+  const vis=J.blocks.map((b,i)=>({b,i})).filter(x=>x.b.st!=='zap'||true);
+  let l='',t='';
+  vis.forEach(({b,i})=>{
+    const cls=b.st==='done'?'fait':b.st==='zap'?'zap':i===J.cur?'now':'';
+    const w=b.st==='zap'?3:b.dur;
+    l+=`<button type="button" style="flex:${w}" class="${cls}${i===vu?' vu':''}" data-voir="${i}" aria-label="${esc(b.label)}"></button>`;
+    const d=b.dur-b.orig,mod=b.st!=='zap'&&d?`<span class="modif${d<0?' moins':''}" style="display:inline-block">${d>0?'+':'−'}${Math.abs(d)}</span>`:'';
+    const heure=b.st==='zap'?'zappé':(J.started&&h[i]?hm(h[i].s):b.dur+' min');
+    t+=`<button type="button" style="flex:${w}" class="${cls}" data-voir="${i}"><b>${heure}${mod}</b><span>${esc(b.label)}</span></button>`;
+  });
+  let cur='';
+  if(J.started&&!J.fin){const tot=h.filter(Boolean),deb=J.started,fin=tot.length?tot[tot.length-1].e:deb;
+    // position du curseur : proportionnelle au temps dans le bloc en cours, sur la largeur dessinée
+    const ws=J.blocks.map(b=>b.st==='zap'?3:b.dur),W=ws.reduce((a,b)=>a+b,0);
+    let acc=0;for(let i=0;i<J.cur;i++)acc+=ws[i];
+    const r=restant(),b=J.blocks[J.cur];let frac=0;if(b&&J.bt&&r!=null)frac=Math.min(1,Math.max(0,1-r/(b.dur*60)));
+    const pos=(acc+frac*(ws[J.cur]||0))/W*100;
+    cur=`<div class="curseur" style="left:calc(18px + (100% - 36px) * ${pos/100})">${hm(Date.now())}</div>`;}
+  $('deroule').innerHTML=cur+`<div class="ligneT">${l}</div><div class="blocs">${t}</div>`;
+}
+function variables(e){
+  if(!e||!(e.moins||e.plus))return '';
+  return `<div class="vars">${e.moins?`<div class="v m"><b><i>−</i>Plus facile</b>${esc(e.moins)}</div>`:''}${e.plus?`<div class="v p"><b><i>+</i>Plus difficile</b>${esc(e.plus)}</div>`:''}</div>`;
+}
+function suivantDe(i){for(let k=i+1;k<J.blocks.length;k++)if(J.blocks[k].st==='todo')return k;return -1}
+function rendreZone(){
+  const z=$('zone');
+  if(J.fin){z.innerHTML=finHTML();lierFin();return}
+  const i=J.vu!=null?J.vu:J.cur,b=J.blocks[i];if(!b){z.innerHTML='';return}
+  const e=exDuBloc(b),s=sea(J.c,J.id),h=horaires()[i];
+  const apercu=J.vu!=null&&J.vu!==J.cur;
+  const enCours=!apercu&&i===J.cur&&!!J.bt;
+  const d=b.dur-b.orig;
+  const tagMod=d?`<span class="tag${d<0?' moins':''}">${d>0?'rallongé':'raccourci'} de ${Math.abs(d)} min</span>`:'';
+  let etiq,quand;
+  if(apercu){etiq=b.st==='done'?'Bloc fait':b.st==='zap'?'Bloc zappé':'Aperçu, plus tard';quand=`${b.dur} min${h&&J.started?', vers '+hm(h.s):''}`}
+  else if(enCours){etiq='En cours';quand=`Jusqu’à ${hm(h.e)} ${tagMod}`}
+  else {etiq=J.started?'À lancer maintenant':'Pour commencer';quand=`${b.dur} min ${tagMod}`}
+  let corps='';
+  if(b.k==='warm'){corps=`<div class="texte" style="margin-top:14px"><p>${texteChaud(s.warm)}</p></div>`}
+  else if(b.k==='bilan'){corps=`<h2 class="rub">Bilan avec les élèves</h2><div class="texte"><p>${esc(s.bilan||'Ce qui a progressé, ce qui reste à travailler, ce qui vient la prochaine fois.')}</p></div>`}
+  else if(e){
+    const avant=!enCours;
+    const roles=e.four?`<div class="roles"><small>Rôle de chacun</small><p>${esc(e.four)}</p></div>`:'';
+    const org=`<h2 class="rub">Organisation</h2><p class="texte">${esc(e.disp)}</p>`;
+    const der=`<h2 class="rub">Déroulement</h2><ol class="der">${(e.deroul||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`;
+    const reus=e.reus?`<p class="reussite"><b>Réussi si</b> ${esc(e.reus)}</p>`:'';
+    corps=avant?(org+roles+reus+variables(e)):(der+reus+variables(e)+`<details class="revoir"><summary>Revoir l’organisation</summary>${org.replace('<h2 class="rub">Organisation</h2>','')}${roles}</details>`);
+  }
+  let ctrl='';
+  if(apercu){ctrl=`<div class="lance"><button class="bt noir" type="button" data-act="retour">Revenir au bloc en cours</button>${b.st==='todo'?`<button class="bt clair" type="button" data-act="zap" data-i="${i}">Zapper ce bloc</button>`:''}</div>`}
+  else if(enCours){ctrl=`<div class="reglage"><div class="chrono" id="chrono"><span class="num">–</span><small>restantes</small></div><button class="bt jaune" type="button" data-act="plus" data-v="2">+ 2 min</button><button class="bt jaune" type="button" data-act="plus" data-v="5">+ 5 min</button><button class="bt clair" type="button" data-act="pause" id="btPause">Pause</button><button class="bt noir suiv" type="button" data-act="suivant">${suivantDe(i)<0?'Terminer la séance':'Bloc suivant'}</button></div>`}
+  else {ctrl=`<div class="lance"><button class="bt noir go" type="button" data-act="go">${J.started?'C’est parti':'Démarrer la séance'}</button><button class="bt clair" type="button" data-act="zap" data-i="${i}">Zapper</button></div>`}
+  const carte=`<article class="carte${apercu?' apercu':enCours?'':' attente'}"><p class="etiq">${etiq}</p><h1>${esc(titreBloc(b))}</h1><p class="quand">${quand}</p>${enCours?ctrl:''}${corps}${enCours?'':ctrl}</article>`;
+  // colonne de droite : schéma, consignes, ensuite
+  let cote='';
+  if(e){cote+=`<div class="boite"><h2>${esc(e.k||'Schéma')}</h2>${schemaDe(e)||'<p class="cap">Pas de schéma pour cette situation.</p>'}</div>`;
+    if(e.cons&&e.cons.length)cote+=`<div class="boite"><h2>Consignes de réalisation</h2><ul>${e.cons.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`}
+  const k=suivantDe(apercu?J.cur:i);
+  if(!apercu&&k>=0){const nb=J.blocks[k];cote+=`<div class="ensuite"><div><small>Ensuite${J.started&&horaires()[k]?', vers '+hm(horaires()[k].s):''}</small><b>${esc(nb.label)}</b> <span class="cap">${nb.dur} min</span></div><button class="bt clair" type="button" data-act="voir" data-i="${k}">Voir</button><button class="bt clair" type="button" data-act="zap" data-i="${k}">Zapper</button></div>`}
+  z.innerHTML=carte+`<aside class="cote">${cote}</aside>`;
+  tic();
+}
+function rendreInfo(){
+  const f=finPrevue(),r=retardMin();
+  let txt;
+  if(J.fin)txt=`Séance terminée à <b>${hm(J.fin)}</b>`;
+  else if(!J.started)txt=`Séance de <b>${J.cible} min</b> de pratique. Touche « Démarrer » au coup de sifflet.`;
+  else txt=`Fin prévue <b class="${r>0?'retard':''}">${hm(f)}</b>${r>0?` · ${r} min de plus que prévu`:r<0?` · ${-r} min d’avance`:''}`;
+  $('info').innerHTML=txt;
+}
+let bipFait=false;
+function tic(){
+  const c=$('chrono');if(!c)return;
+  const r=restant();if(r==null)return;
+  c.querySelector('span').textContent=(r<0?'+':'')+mmss(r);
+  c.querySelector('small').textContent=r<0?'de dépassement':J.pausedAt?'en pause':'restantes';
+  c.classList.toggle('fini',r<0);c.classList.toggle('pause',!!J.pausedAt);
+  const bp=$('btPause');if(bp)bp.textContent=J.pausedAt?'Reprendre':'Pause';
+  if(r<0&&!bipFait&&!J.pausedAt){bipFait=true;if(J.son)bip()}
+}
+setInterval(()=>{if(J.started&&!J.fin){tic();rendreDeroule();rendreInfo()}},1000);
+
+/* ================== Actions ================== */
+let ac=null;
+function bip(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();[0,.25].forEach(t=>{const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;g.gain.setValueAtTime(.0001,ac.currentTime+t);g.gain.exponentialRampToValueAtTime(.25,ac.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+t+.18);o.connect(g).connect(ac.destination);o.start(ac.currentTime+t);o.stop(ac.currentTime+t+.2)})}catch(e){}}
+let verrou=null;
+async function eveil(){try{if('wakeLock' in navigator&&!verrou&&document.visibilityState==='visible'){verrou=await navigator.wakeLock.request('screen');verrou.addEventListener('release',()=>{verrou=null})}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&J.started&&!J.fin)eveil()});
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+
+function lancer(){
+  const now=Date.now();
+  if(!J.started)J.started=now;
+  if(J.blocks[J.cur].st!=='todo'){const k=suivantDe(J.cur-1);if(k<0)return;J.cur=k}
+  J.bt=now;J.pauseMs=0;J.pausedAt=null;J.vu=null;bipFait=false;sauver();eveil();
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}
+  rendre();window.scrollTo({top:0,behavior:'smooth'});
+}
+function suivant(){
+  const now=Date.now(),b=J.blocks[J.cur];
+  if(J.pausedAt){J.pauseMs+=now-J.pausedAt;J.pausedAt=null}
+  b.st='done';b.s=J.bt;b.e=now;
+  const k=suivantDe(J.cur);
+  J.bt=null;J.pauseMs=0;J.vu=null;
+  if(k<0){J.fin=now;sauver();rendre();return}
+  J.cur=k;sauver();rendre();window.scrollTo({top:0,behavior:'smooth'});
+}
+function zapper(i){const b=J.blocks[i];if(!b||b.st==='done')return;
+  if(b.st==='zap'){b.st='todo'}else{if(i===J.cur&&J.bt)return toast('Termine d’abord le bloc en cours, ou passe au suivant.');b.st='zap';if(i===J.cur){const k=suivantDe(i);if(k>=0)J.cur=k}}
+  if(J.vu===i)J.vu=null;sauver();rendre();if(panneauOuvert==='ajuster')ouvrirAjuster()}
+document.addEventListener('click',ev=>{
+  const v=ev.target.closest('[data-voir]');if(v){const i=+v.dataset.voir;J.vu=(i===J.cur)?null:i;rendreDeroule();rendreZone();return}
+  const a=ev.target.closest('[data-act]');if(!a)return;
+  const act=a.dataset.act,i=+a.dataset.i;
+  if(act==='go')lancer();
+  else if(act==='suivant')suivant();
+  else if(act==='plus'){J.blocks[J.cur].dur+=+a.dataset.v;bipFait=restant()<0;sauver();rendre();toast(`Rallongé de ${a.dataset.v} min`)}
+  else if(act==='pause'){const now=Date.now();if(J.pausedAt){J.pauseMs+=now-J.pausedAt;J.pausedAt=null}else J.pausedAt=now;sauver();tic();rendreInfo()}
+  else if(act==='retour'){J.vu=null;rendreDeroule();rendreZone()}
+  else if(act==='voir'){J.vu=i;rendreDeroule();rendreZone();window.scrollTo({top:0,behavior:'smooth'})}
+  else if(act==='zap')zapper(i);
+});
+/* balayage : passer d'un bloc à l'autre, en aperçu */
+let x0=null,y0=null;
+$('zone').addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY},{passive:true});
+$('zone').addEventListener('touchend',e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
+  if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.5||J.fin)return;
+  const cur=J.vu!=null?J.vu:J.cur,n=Math.max(0,Math.min(J.blocks.length-1,cur+(dx<0?1:-1)));
+  J.vu=n===J.cur?null:n;rendreDeroule();rendreZone()},{passive:true});
+
+/* ================== Fin de séance ================== */
+function resume(){const r=[];J.blocks.forEach(b=>{if(b.st==='zap')r.push(`${esc(b.label)} : zappé`);else{const d=b.dur-b.orig;if(d)r.push(`${esc(b.label)} : ${d>0?'rallongé':'raccourci'} de ${Math.abs(d)} min`)}});return r}
+function seanceSuivante(){const L=CYC[J.c].L,i=L.findIndex(s=>s.id===J.id);return L[i+1]||null}
+function finHTML(){
+  const r=resume(),zaps=J.blocks.filter(b=>b.st==='zap'&&b.k==='ex'),nx=seanceSuivante();
+  const notes=lire('vt-notes',{}),cle=J.date+' '+J.c+'-'+J.id;
+  return `<article class="carte"><p class="etiq">Séance terminée</p><h1>Bilan de la séance</h1><p class="quand">Fin à ${hm(J.fin)}${J.started?`, ${Math.round((J.fin-J.started)/60000)} min de pratique`:''}</p>
+  <h2 class="rub">Ce qui a changé</h2><div class="texte">${r.length?'<ul>'+r.map(x=>`<li>${x}</li>`).join('')+'</ul>':'<p>Le déroulé prévu a été suivi.</p>'}</div>
+  ${zaps.length&&nx?`<h2 class="rub">Exercices zappés</h2>${zaps.map((b,k)=>`<label class="case"><input type="checkbox" data-rep="${J.blocks.indexOf(b)}" checked> Proposer « ${esc(b.label)} » au début de ${esc(nx.n)}</label>`).join('')}`:''}
+  <h2 class="rub">Ce que je retiens (facultatif)</h2><textarea class="note" id="note" placeholder="Une phrase suffit.">${esc(notes[cle]||'')}</textarea>
+  <div class="lance"><button class="bt noir go" type="button" id="btFin">Enregistrer</button><button class="bt clair" type="button" id="btRouvrir">Reprendre la séance</button></div></article>
+  <aside class="cote"><div class="boite"><h2>Et ensuite</h2><p class="texte">${nx?`La prochaine séance est ${esc(nx.n)} · ${esc(nx.title)}. Pour en faire la séance du jour, marque-la dans <a href="index.html#${J.c}-${nx.id}">Préparer</a>.`:'C’était la dernière séance du cycle.'}</p></div></aside>`;
+}
+function lierFin(){
+  $('btFin').onclick=()=>{const notes=lire('vt-notes',{});notes[J.date+' '+J.c+'-'+J.id]=$('note').value.trim();ecrire('vt-notes',notes);
+    const nx=seanceSuivante(),reps=lire('vt-reports',[]);
+    document.querySelectorAll('[data-rep]').forEach(c=>{const b=J.blocks[+c.dataset.rep];const exist=reps.findIndex(x=>x.ref&&b.ref&&x.ref.id===b.ref.id&&x.ref.i===b.ref.i&&x.pour===nx.id);
+      if(c.checked&&exist<0&&nx)reps.push({c:J.c,pour:nx.id,depuis:sea(J.c,J.id).n,ref:b.ref,label:b.label,dur:b.orig});
+      if(!c.checked&&exist>=0)reps.splice(exist,1)});
+    ecrire('vt-reports',reps);toast('Bilan enregistré')};
+  $('btRouvrir').onclick=()=>{J.fin=null;const b=J.blocks[J.cur];if(b&&b.st==='done'){b.st='todo';J.bt=null}sauver();rendre()};
+}
+
+/* ================== Panneaux ================== */
+let panneauOuvert=null;
+function fermer(){panneauOuvert=null;$('couche').innerHTML=''}
+function panneau(cote,titre,html,bouton){
+  $('couche').innerHTML=`<div class="voile" data-ferme></div><section class="panneau ${cote}" role="dialog" aria-label="${esc(titre)}"><div class="ph"><h2>${esc(titre)}</h2><button class="bt noir" type="button" data-ferme>${bouton||'Terminé'}</button></div><div class="pc">${html}</div></section>`;
+  $('couche').querySelectorAll('[data-ferme]').forEach(x=>x.onclick=()=>{fermer();rendre()});
+}
+/* --- Ajuster le déroulé --- */
+function ouvrirAjuster(){
+  panneauOuvert='ajuster';
+  const h=horaires(),r=retardMin();
+  let al='';
+  if(J.started&&r>0){
+    const k=suivantDe(J.cur);const futurs=J.blocks.map((b,i)=>({b,i})).filter(x=>x.b.st==='todo'&&x.i!==J.cur);
+    const long=futurs.filter(x=>x.b.k==='ex').sort((a,b)=>b.b.dur-a.b.dur)[0];
+    const bil=futurs.find(x=>x.b.k==='bilan');
+    al=`<div class="alerte"><p>Avec ces changements, la séance finit à <b>${hm(finPrevue())}, ${r} min plus tard que prévu</b>.</p>
+     ${long&&long.b.dur-r>=5?`<button class="bt" type="button" data-aj="moins" data-i="${long.i}" data-v="${r}">Retirer ${r} min à « ${esc(long.b.label)} »</button>`:''}
+     ${long?`<button class="bt" type="button" data-aj="zap" data-i="${long.i}">Zapper « ${esc(long.b.label)} »</button>`:''}
+     ${bil&&bil.b.dur>2?`<button class="bt" type="button" data-aj="moins" data-i="${bil.i}" data-v="${Math.min(r,bil.b.dur-1)}">Raccourcir le bilan de ${Math.min(r,bil.b.dur-1)} min</button>`:''}</div>`;
+  } else if(J.started&&r<0){al=`<div class="alerte ok"><p><b>${-r} min d’avance.</b> Tu peux rallonger une situation qui marche.</p></div>`}
+  const reps=lire('vt-reports',[]).filter(x=>x.c===J.c&&x.pour===J.id);
+  const repH=reps.map((x,k)=>`<div class="report"><div><b>Reporté de ${esc(x.depuis)}</b> : ${esc(x.label)}, ${x.dur} min</div><button class="bt noir" type="button" data-aj="rep" data-k="${k}">Ajouter</button><button class="bt clair" type="button" data-aj="repx" data-k="${k}">Non</button></div>`).join('');
+  const lignes=J.blocks.map((b,i)=>{
+    const cls=b.st==='done'?'fait':b.st==='zap'?'zap':i===J.cur?'now':'';
+    const d=b.dur-b.orig,hh=h[i];
+    const sous=b.st==='done'?`fait, ${hm(b.s)} à ${hm(b.e)}`:b.st==='zap'?'zappé':i===J.cur&&J.bt?`en cours, jusqu’à ${hm(hh.e)}`:(J.started&&hh?`${hm(hh.s)} à ${hm(hh.e)}`:'à venir');
+    const modif=b.st!=='done';
+    return `<div class="ligneA ${cls}"><div class="nom">${esc(titreBloc(b))}<small>${sous}</small></div>
+      <div class="pas">${modif?`<button type="button" data-aj="moins" data-i="${i}" data-v="1" aria-label="Une minute de moins">−</button>`:''}<span class="num">${b.dur}′${d?`<em>${d>0?'+':'−'}${Math.abs(d)}</em>`:''}</span>${modif?`<button type="button" data-aj="plus" data-i="${i}" aria-label="Une minute de plus">+</button>`:''}</div>
+      ${modif?`<div class="act">${!(i===J.cur&&J.bt)?`<button class="bt${b.st==='zap'?' on':''}" type="button" data-aj="zap" data-i="${i}">${b.st==='zap'?'Rétablir':'Zapper'}</button>`:''}${b.k==='ex'&&!(i===J.cur&&J.bt)?`<button class="bt" type="button" data-aj="remp" data-i="${i}">Remplacer</button>`:''}${i>J.cur&&i>1?`<button class="bt" type="button" data-aj="haut" data-i="${i}">Monter</button>`:''}${i>J.cur&&i<J.blocks.length-2?`<button class="bt" type="button" data-aj="bas" data-i="${i}">Descendre</button>`:''}</div>`:''}</div>`;
+  }).join('');
+  panneau('droite','Ajuster le déroulé',al+repH+lignes+`<div class="ajout"><button class="bt" type="button" data-aj="ajout">+ Ajouter un exercice d’une autre séance</button></div>
+   <p class="aide">Ces changements ne valent que pour la séance d’aujourd’hui. Demain, la séance repart de son plan d’origine.</p>
+   <div class="reglages"><label class="case"><input type="checkbox" id="son" ${J.son?'checked':''}> Petit signal sonore en fin de bloc</label></div>
+   <p class="aide"><button class="bt clair" type="button" data-aj="reset">Revenir au déroulé d’origine</button></p>`);
+  $('son').onchange=e=>{J.son=e.target.checked;sauver()};
+}
+function deplacer(i,d){const j=i+d;if(j<=J.cur||j<1||j>J.blocks.length-2)return;const t=J.blocks[i];J.blocks[i]=J.blocks[j];J.blocks[j]=t}
+document.addEventListener('click',ev=>{
+  const a=ev.target.closest('[data-aj]');if(!a)return;
+  const act=a.dataset.aj,i=+a.dataset.i,b=J.blocks[i];
+  if(act==='plus'){b.dur+=1}
+  else if(act==='moins'){b.dur=Math.max(1,b.dur-(+a.dataset.v||1))}
+  else if(act==='zap'){zapper(i);return}
+  else if(act==='haut')deplacer(i,-1);
+  else if(act==='bas')deplacer(i,1);
+  else if(act==='remp'){choisirExo(ex=>{b.ref=ex.ref;b.label=ex.label;sauver();ouvrirAjuster();rendre()},'Remplacer « '+b.label+' »');return}
+  else if(act==='ajout'){choisirExo(ex=>{const pos=Math.max(J.cur+(J.bt?1:0),1);J.blocks.splice(pos,0,{k:'ex',ref:ex.ref,label:ex.label,dur:ex.dur,orig:ex.dur,st:'todo'});sauver();ouvrirAjuster();rendre()},'Ajouter un exercice');return}
+  else if(act==='rep'||act==='repx'){const all=lire('vt-reports',[]),mine=all.filter(x=>x.c===J.c&&x.pour===J.id),x=mine[+a.dataset.k];
+    if(act==='rep'){const pos=Math.max(J.cur+(J.bt?1:0),1);J.blocks.splice(pos,0,{k:'ex',ref:x.ref,label:x.label,dur:x.dur,orig:x.dur,st:'todo'})}
+    all.splice(all.indexOf(x),1);ecrire('vt-reports',all)}
+  else if(act==='reset'){if(!confirm('Revenir au déroulé d’origine ? Les blocs déjà faits restent faits.'))return;
+    const p=plan(J.c,J.id);p.forEach((x,k)=>{const old=J.blocks.find(o=>o.st==='done'&&o.k===x.k&&JSON.stringify(o.ref)===JSON.stringify(x.ref));if(old)Object.assign(x,{st:'done',s:old.s,e:old.e})});J.blocks=p;J.cur=Math.max(0,J.blocks.findIndex(x=>x.st==='todo'));J.bt=null}
+  sauver();rendre();ouvrirAjuster();
+});
+/* --- Choisir un exercice (autres séances) --- */
+function choisirExo(cb,titre){
+  const bouton=(c,s,e,i)=>{const d=s.tl&&s.tl[i+1]?+s.tl[i+1][1]:15;const l=s.tl&&s.tl[i+1]?s.tl[i+1][0]:e.t;
+    return `<button type="button" data-c="${c}" data-id="${s.id}" data-i="${i}" data-d="${d}" data-l="${esc(l)}"><b>${esc(e.t)}</b><span>${d} min, ${esc(e.k||'')}</span></button>`};
+  const groupes=['t','p'].sort((a,b)=>a===J.c?-1:1).map(c=>CYC[c].L.filter(s=>s.ex&&s.ex.length).map(s=>`<h3>${esc(CYC[c].label)}, ${esc(s.n)} : ${esc(s.short)}</h3>`+s.ex.map((e,i)=>bouton(c,s,e,i)).join('')).join('')).join('');
+  panneau('droite',titre,`<div class="choix">${groupes}</div>`,'Annuler');
+  $('couche').querySelectorAll('.choix button').forEach(x=>x.onclick=()=>cb({ref:{c:x.dataset.c,id:x.dataset.id,i:+x.dataset.i},label:x.dataset.l,dur:+x.dataset.d}));
+}
+/* --- Mes séances --- */
+let cyVu=null;
+function ouvrirSeances(){
+  panneauOuvert='seances';cyVu=cyVu||J.c;
+  const L=CYC[cyVu].L,cur=L.findIndex(s=>s.id===CUR[cyVu]);
+  const cartes=L.map((s,i)=>{
+    const etat=s.status==='eval'||s.evalPage?'eval':cur<0?'':i<cur?'fait':i===cur?'jour':'';
+    const et=etat==='fait'?'<b>Faite</b>':etat==='jour'?'<b>Séance du jour</b>':etat==='eval'?'Évaluation':'À venir';
+    const ouv=cyVu===J.c&&s.id===J.id;
+    const mini=s.tl?`<div class="mini">${s.tl.map(x=>`<i style="flex:${x[1]}"></i>`).join('')}</div>`:'';
+    return `<button type="button" class="sc ${etat}${ouv?' ouverte':''}" data-s="${s.id}"><span class="n">${esc(s.n)}</span><h3>${esc(s.title)}</h3><span class="et">${et}${ouv?' · ouverte ici':''}</span>${mini}</button>`;
+  }).join('');
+  panneau('gauche','Mes séances',`<div class="cy"><button type="button" data-cy="p" class="${cyVu==='p'?'on':''}">Première</button><button type="button" data-cy="t" class="${cyVu==='t'?'on':''}">Terminale</button></div><div class="grilleS">${cartes}</div>
+   <p class="aide">Touche une séance pour la faire maintenant. Banque d’exercices, tournoi, observation, évaluation et fiches PDF sont dans <a href="index.html#${cyVu}-${CUR[cyVu]||CYC[cyVu].L[0].id}">Préparer</a>.</p>`,'Fermer');
+  $('couche').querySelectorAll('[data-cy]').forEach(x=>x.onclick=()=>{cyVu=x.dataset.cy;ouvrirSeances()});
+  $('couche').querySelectorAll('[data-s]').forEach(x=>x.onclick=()=>{
+    const s=sea(cyVu,x.dataset.s);
+    if(!s.ex||!s.ex.length){location.href='index.html#'+cyVu+'-'+s.id;return}
+    if(cyVu===J.c&&s.id===J.id){fermer();return}
+    const engagee=J.started&&!J.fin;
+    if(engagee&&!confirm(`Passer à ${s.n} ? Le déroulé en cours de ${sea(J.c,J.id).n} sera remis à zéro.`))return;
+    nouveau(cyVu,s.id);fermer();rendre();window.scrollTo({top:0});
+  });
+}
+$('btAjuster').onclick=ouvrirAjuster;
+$('btSeances').onclick=ouvrirSeances;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panneauOuvert){fermer();rendre()}});
+
+rendre();
+if(J.started&&!J.fin)eveil();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
+</script>
+</body>
+</html>
