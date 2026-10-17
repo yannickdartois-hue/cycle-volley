@@ -2,16 +2,17 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<style>[hidden]{display:none!important}img{max-width:100%}</style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" type="image/png" href="icon-192.png">
-<meta name="apple-mobile-web-app-title" content="Volley">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1f4fa8">
+<meta name="apple-mobile-web-app-title" content="Volley">
+<meta name="theme-color" content="#0891b2">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important}img{max-width:100%}</style>
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Volley Pompidou</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -308,12 +309,19 @@ button.tab.today-btn:not([aria-selected="true"]){border-color:var(--ball);backgr
 .tb.today-on{background:var(--warn-bg);border-color:var(--ball);color:var(--warn);cursor:default}
 </style>
 
+
+<style id="appicon-css">.appicon{width:40px;height:40px;border-radius:9px;vertical-align:middle;margin:0 10px 0 0;box-shadow:0 1px 3px rgba(0,0,0,.25);flex:none;display:inline-block;object-fit:cover}
+.appicon.big{width:72px;height:72px;border-radius:16px;margin:0 auto 10px;display:block}
+.appicon.fill{width:100%;height:100%;margin:0;border-radius:inherit;box-shadow:none;display:block}
+.appicon.logoimg{width:46px;height:46px;margin:0;border-radius:12px}
+.test-banner{background:#facc15;color:#111;font:700 15px/1.3 system-ui,sans-serif;text-align:center;padding:8px 12px;position:relative;z-index:99999}
+@media print{.appicon,.test-banner{display:none!important}}</style>
 </head>
 <body>
 
 <div class="wrap">
   <header>
-    <h1>Cycles Volley-ball · Première et Terminale</h1>
+    <h1><img class="appicon" src="icon-192.png" alt="" width="40" height="40">Cycles Volley-ball · Première et Terminale</h1>
     <details class="about"><summary>À propos de l’outil</summary>
     <p>Deux cycles de 9 séances en 4c4, évaluation en S9, alignés sur le référentiel du lycée Georges Pompidou. Chaque séance tient en 75 min de pratique : échauffement d’équipe, 2 exercices, puis 3 tours de 4c4 avec un thème. Le cycle de Terminale suit ta classe actuelle (choisis la séance du jour dans la liste « Séances ») ; le cycle de Première est un plan complet construit avec les cours de Thomas, Thierry et Carine.</p>
     <div class="meta">
