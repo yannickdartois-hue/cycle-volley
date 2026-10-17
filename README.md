@@ -6,9 +6,10 @@
 - **Mode gymnase** : bouton en haut à droite. Actif par défaut quand l'appli est ouverte depuis l'écran d'accueil de l'iPad.
 - `index-old.html` : la version d'avant, gardée telle quelle (bandeau jaune « Ancienne version »).
 
-## Écran terrain (version test, 17/10/2026)
-- `terrain.html` : l'écran à utiliser pendant le cours. Bloc en cours, minuteur discret, variables plus facile / plus difficile, « Ajuster le déroulé » (rallonger, raccourcir, zapper, remplacer, changer l'ordre), « Mes séances ». Les ajustements ne valent que pour la séance du jour.
-- `index.html` : l'outil complet, inchangé (bouton « Préparer » depuis l'écran terrain). `index-old.html` : la version d'origine.
-- `volley-donnees.js` : séances, schémas et échauffements, partagés par les deux pages. Modifier une séance ici la modifie partout.
-- `polices/` : polices embarquées pour le hors ligne (licence SIL OFL, voir `polices/LICENCES.txt`).
-- Durées : les fiches suivent le déroulé de la séance (75 min de pratique).
+## Organisation des pages (18/10/2026)
+- `index.html` : **la version actuelle du cycle**, l'écran de cours. Séances du cycle dans le bandeau (un toucher pour en afficher une), bascule Première / Terminale, déroulé ajustable, variables, schémas.
+- `cycle-volley-old.html` : l'outil précédent, gardé par sécurité. C'est aussi là que restent la classe, le tournoi, l'observation, l'évaluation, la banque et les PDF (bouton « Préparer »).
+- `index-old.html` : la toute première version.
+- `terrain.html` : ancienne adresse de test, renvoie vers `index.html`.
+- `volley-donnees.js` : séances, schémas et échauffements, partagés par toutes les pages.
+- `polices/` : polices embarquées pour le hors ligne (licence SIL OFL).
