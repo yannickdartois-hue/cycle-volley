@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F2A900">
+<meta name="theme-color" content="#1d4ed8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Volley terrain">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -64,6 +64,24 @@ body.niv-t{--niv:var(--c-t);--niv-pale:var(--c-t-pale)}
 .pc.niv-p{--nivp:var(--c-p)}
 </style>
 <style>/* Lisibilité terrain : textes à 15 px minimum à l'écran ; tailles d'origine à l'impression. */@media print{:root{--fs-min:0px}}</style>
+<link rel="stylesheet" href="eps-charte-v1.css">
+<style>/* Charte v1 : couleur de l'activité et teinte de chaque cycle (calculées par construire.py) */
+:root{--act:#1d4ed8;--act-fonce:#123086;--act-pale:#e4eafa;--act-sombre:#839eea;--act-pale-sombre:#18264a}
+:root{--c-p:#d2dcf7;--c-p-pale:#e4eafa}
+body.niv-p{--niv:#d2dcf7;--sur-niv:#1c2128;--niv-pale:var(--act-pale)}
+:root[data-theme="dark"] body.niv-p{--niv:#193274;--sur-niv:#e6edf3}
+.cy button[data-cy=p].on{background:#d2dcf7;color:#1c2128}
+:root[data-theme="dark"] .cy button[data-cy=p].on{background:#193274;color:#e6edf3}
+.pc.niv-p .sc.jour{outline-color:var(--ligne)}
+.pc.niv-p{--nivp:#1d4ed8}
+:root{--c-t:#123086;--c-t-pale:#e4eafa}
+body.niv-t{--niv:#123086;--sur-niv:#ffffff;--niv-pale:var(--act-pale)}
+:root[data-theme="dark"] body.niv-t{--niv:#99afed;--sur-niv:#0d1117}
+.cy button[data-cy=t].on{background:#123086;color:#ffffff}
+:root[data-theme="dark"] .cy button[data-cy=t].on{background:#99afed;color:#0d1117}
+.pc.niv-t .sc.jour{outline-color:var(--ligne)}
+.pc.niv-t{--nivp:#123086}
+</style>
 </head>
 <body>
 <header class="barre">
