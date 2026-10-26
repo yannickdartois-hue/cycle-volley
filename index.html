@@ -37,7 +37,7 @@ body.niv-t{--niv:var(--c-t);--niv-pale:var(--c-t-pale)}
 .c-att{stroke:#F2A900;stroke-width:3;fill:none}
 .c-net{stroke:#172033;stroke-width:6}
 .c-zone{fill:#F2A900;fill-opacity:.22;stroke:#8A5A00;stroke-width:1.5;stroke-dasharray:6 4}
-.c-zonet{fill:#8A5A00;font:700 13px var(--t)}
+.c-zonet{fill:#8A5A00;font:700 max(13px,var(--fs-min,15px)) var(--t)}
 .c-target{fill:#F2A900;fill-opacity:.3;stroke:#8A5A00;stroke-width:1.5}
 .c-cone{fill:#E8590C}
 .c-pa{fill:#2F6FB0}
@@ -47,22 +47,23 @@ body.niv-t{--niv:var(--c-t);--niv-pale:var(--c-t-pale)}
 .c-ball{stroke:#172033;stroke-width:2.5;stroke-dasharray:8 5;fill:none}
 .c-run{stroke:#172033;stroke-width:3;fill:none}
 .c-head-b,.c-head-r{fill:#172033}
-.c-label{fill:#172033;font:700 13px var(--t);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
-.c-say{fill:#172033;font:italic 700 13px var(--t);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.c-label{fill:#172033;font:700 max(13px,var(--fs-min,15px)) var(--t);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.c-say{fill:#172033;font:italic 700 max(13px,var(--fs-min,15px)) var(--t);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
 .c-shadow{fill:#172033;fill-opacity:.07}
 .c-ordre circle{fill:#F2A900;stroke:#fff;stroke-width:2}
 .c-ordre text{fill:#172033;font:800 15px var(--d);text-anchor:middle;dominant-baseline:central}
-.legende{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 4px 0;font-size:14px;color:var(--repere)}
+.legende{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 4px 0;font-size:max(14px,var(--fs-min,15px));color:var(--repere)}
 .legende span{display:inline-flex;align-items:center;gap:6px}
 .legende i{display:inline-block;flex:none}
 .legende .rond{width:14px;height:14px;border-radius:50%}
 .legende .pt{width:24px;border-top:2.5px dashed currentColor}
 .legende .tr{width:24px;border-top:3px solid currentColor}
-.legende .num{width:18px;height:18px;border-radius:50%;background:#F2A900;color:#172033;font:800 12px/18px var(--d);text-align:center;font-style:normal}
+.legende .num{width:18px;height:18px;border-radius:50%;background:#F2A900;color:#172033;font:800 max(12px,var(--fs-min,15px))/18px var(--d);text-align:center;font-style:normal}
 .cy button[data-cy=p].on{background:var(--c-p);color:var(--sur-niv)}
 .pc.niv-p .sc.jour{outline-color:var(--c-p)}
 .pc.niv-p{--nivp:var(--c-p)}
 </style>
+<style>/* Lisibilité terrain : textes à 15 px minimum à l'écran ; tailles d'origine à l'impression. */@media print{:root{--fs-min:0px}}</style>
 </head>
 <body>
 <header class="barre">
