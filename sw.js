@@ -1,4 +1,4 @@
-const V='cycle-volley-v21';
+const V='cycle-volley-v23';
 // Toutes les applis partagent le même stockage (même adresse github.io) : on n'efface QUE les anciennes versions de CETTE appli.
 const MES_CACHES=/^(?:cycle\-volley\-v|volley\-v)\d+$/;
 
